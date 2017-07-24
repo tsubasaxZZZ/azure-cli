@@ -1348,8 +1348,9 @@ def remove_nic_ip_config_inbound_nat_rule(
 
 # region Network Security Group commands
 
-def create_nsg(resource_group_name, network_security_group_name, location=None, tags=None):
-    client = network_client_factory().network_security_groups
+def create_nsg(cli_ctx, resource_group_name, network_security_group_name, location=None, tags=None):
+    NetworkSecurityGroup = cli_ctx.cloud.get_sdk(ResourceType.MGMT_NETWORK, 'NetworkSecurityGroup', mod='models')
+    client = network_client_factory(cli_ctx).network_security_groups
     nsg = NetworkSecurityGroup(location=location, tags=tags)
     return client.create_or_update(resource_group_name, network_security_group_name, nsg)
 
@@ -1482,10 +1483,12 @@ def create_vnet_peering(resource_group_name, virtual_network_name, virtual_netwo
 # region Vnet/Subnet commands
 
 # pylint: disable=too-many-locals
-def create_vnet(resource_group_name, vnet_name, vnet_prefixes='10.0.0.0/16',
+def create_vnet(cli_ctx, resource_group_name, vnet_name, vnet_prefixes='10.0.0.0/16',
                 subnet_name=None, subnet_prefix=None, dns_servers=None,
                 location=None, tags=None):
-    client = network_client_factory().virtual_networks
+    AddressSpace, DhcpOptions, Subnet, VirtualNetwork = cli_ctx.cloud.get_sdk(
+        ResourceType.MGMT_NETWORK, 'AddressSpace', 'DhcpOptions', 'Subnet', 'VirtualNetwork', mod='models')
+    client = network_client_factory(cli_ctx).virtual_networks
     tags = tags or {}
     vnet = VirtualNetwork(
         location=location, tags=tags,

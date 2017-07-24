@@ -432,7 +432,7 @@ def _deploy_arm_template_core(cli_ctx, resource_group_name,  # pylint: disable=t
     properties = DeploymentProperties(template=template, template_link=template_link,
                                       parameters=parameters, mode=mode)
 
-    smc = get_mgmt_service_client(ResourceType.MGMT_RESOURCE_RESOURCES)
+    smc = get_mgmt_service_client(cli_ctx, ResourceType.MGMT_RESOURCE_RESOURCES)
     if validate_only:
         return smc.deployments.validate(resource_group_name, deployment_name, properties, raw=no_wait)
     return smc.deployments.create_or_update(resource_group_name, deployment_name, properties, raw=no_wait)
@@ -665,7 +665,7 @@ def list_features(client, resource_provider_namespace=None):
 
 def create_policy_assignment(cli_ctx, policy, name=None, display_name=None,
                              resource_group_name=None, scope=None):
-    policy_client = _resource_policy_client_factory()
+    policy_client = _resource_policy_client_factory(cli_ctx)
     scope = _build_policy_scope(policy_client.config.subscription_id,
                                 resource_group_name, scope)
     policy_id = _resolve_policy_id(policy, policy_client)
@@ -676,22 +676,22 @@ def create_policy_assignment(cli_ctx, policy, name=None, display_name=None,
                                                    assignment)
 
 
-def delete_policy_assignment(name, resource_group_name=None, scope=None):
-    policy_client = _resource_policy_client_factory()
+def delete_policy_assignment(cli_ctx, name, resource_group_name=None, scope=None):
+    policy_client = _resource_policy_client_factory(cli_ctx)
     scope = _build_policy_scope(policy_client.config.subscription_id,
                                 resource_group_name, scope)
     policy_client.policy_assignments.delete(scope, name)
 
 
-def show_policy_assignment(name, resource_group_name=None, scope=None):
-    policy_client = _resource_policy_client_factory()
+def show_policy_assignment(cli_ctx, name, resource_group_name=None, scope=None):
+    policy_client = _resource_policy_client_factory(cli_ctx)
     scope = _build_policy_scope(policy_client.config.subscription_id,
                                 resource_group_name, scope)
     return policy_client.policy_assignments.get(scope, name)
 
 
-def list_policy_assignment(disable_scope_strict_match=None, resource_group_name=None, scope=None):
-    policy_client = _resource_policy_client_factory()
+def list_policy_assignment(cli_ctx, disable_scope_strict_match=None, resource_group_name=None, scope=None):
+    policy_client = _resource_policy_client_factory(cli_ctx)
     if scope and not is_valid_resource_id(scope):
         parts = scope.strip('/').split('/')
         if len(parts) == 4:
@@ -754,7 +754,7 @@ def create_policy_definition(cli_ctx, name, rules, display_name=None, descriptio
     else:
         rules = shell_safe_json_parse(rules)
 
-    policy_client = _resource_policy_client_factory()
+    policy_client = _resource_policy_client_factory(cli_ctx)
     PolicyDefinition = cli_ctx.cloud.get_sdk(ResourceType.MGMT_RESOURCE_POLICY, 'PolicyDefinition', mod='models')
     parameters = PolicyDefinition(policy_rule=rules, description=description,
                                   display_name=display_name)
@@ -769,7 +769,7 @@ def update_policy_definition(cli_ctx, policy_definition_name, rules=None,
         else:
             rules = shell_safe_json_parse(rules)
 
-    policy_client = _resource_policy_client_factory()
+    policy_client = _resource_policy_client_factory(cli_ctx)
     definition = policy_client.policy_definitions.get(policy_definition_name)
     # pylint: disable=line-too-long,no-member
     PolicyDefinition = cli_ctx.cloud.get_sdk(ResourceType.MGMT_RESOURCE_POLICY, 'PolicyDefinition', mod='models')
@@ -780,19 +780,19 @@ def update_policy_definition(cli_ctx, policy_definition_name, rules=None,
     return policy_client.policy_definitions.create_or_update(policy_definition_name, parameters)
 
 
-def get_policy_completion_list(prefix, **kwargs):  # pylint: disable=unused-argument
-    policy_client = _resource_policy_client_factory()
+def get_policy_completion_list(cli_ctx, prefix, **kwargs):  # pylint: disable=unused-argument
+    policy_client = _resource_policy_client_factory(cli_ctx)
     result = policy_client.policy_definitions.list()
     return [i.name for i in result]
 
 
-def get_policy_assignment_completion_list(prefix, **kwargs):  # pylint: disable=unused-argument
-    policy_client = _resource_policy_client_factory()
+def get_policy_assignment_completion_list(cli_ctx, prefix, **kwargs):  # pylint: disable=unused-argument
+    policy_client = _resource_policy_client_factory(cli_ctx)
     result = policy_client.policy_assignments.list()
     return [i.name for i in result]
 
 
-def list_locks(resource_group_name=None,
+def list_locks(cli_ctx, resource_group_name=None,
                resource_provider_namespace=None, parent_resource_path=None, resource_type=None,
                resource_name=None, filter_string=None):
     """
@@ -807,7 +807,7 @@ def list_locks(resource_group_name=None,
     :param filter_string: A query filter to use to restrict the results.
     :type filter_string: str
     """
-    lock_client = _resource_lock_client_factory()
+    lock_client = _resource_lock_client_factory(cli_ctx)
     lock_resource = _extract_lock_params(resource_group_name, resource_provider_namespace,
                                          resource_type, resource_name)
     resource_group_name = lock_resource[0]
@@ -882,13 +882,13 @@ def _validate_lock_params_match_lock(
                 name, _resource_name))
 
 
-def get_lock(name, resource_group_name=None, resource_provider_namespace=None,
+def get_lock(cli_ctx, name, resource_group_name=None, resource_provider_namespace=None,
              parent_resource_path=None, resource_type=None, resource_name=None):
     """
     :param name: The name of the lock.
     :type name: str
     """
-    lock_client = _resource_lock_client_factory()
+    lock_client = _resource_lock_client_factory(cli_ctx)
 
     lock_resource = _extract_lock_params(resource_group_name, resource_provider_namespace,
                                          resource_type, resource_name)
@@ -911,7 +911,7 @@ def get_lock(name, resource_group_name=None, resource_provider_namespace=None,
         parent_resource_path or '', resource_type, resource_name, name)
 
 
-def delete_lock(name,
+def delete_lock(cli_ctx, name,
                 resource_group_name=None, resource_provider_namespace=None,
                 parent_resource_path=None, resource_type=None, resource_name=None):
     """
@@ -926,7 +926,7 @@ def delete_lock(name,
     :param resource_name: Name of a resource that has a lock.
     :type resource_name: str
     """
-    lock_client = _resource_lock_client_factory()
+    lock_client = _resource_lock_client_factory(cli_ctx)
     lock_resource = _extract_lock_params(resource_group_name, resource_provider_namespace,
                                          resource_type, resource_name)
     resource_group_name = lock_resource[0]
@@ -963,7 +963,7 @@ def _extract_lock_params(resource_group_name, resource_provider_namespace,
     return (resource_group_name, resource_name, resource_provider_namespace, resource_type)
 
 
-def create_lock(name,
+def create_lock(cli_ctx, name,
                 resource_group_name=None, resource_provider_namespace=None, notes=None,
                 parent_resource_path=None, resource_type=None, resource_name=None, level=None):
     """
@@ -984,7 +984,7 @@ def create_lock(name,
         raise CLIError('--lock-type must be one of "ReadOnly" or "CanNotDelete"')
     parameters = ManagementLockObject(level=level, notes=notes, name=name)
 
-    lock_client = _resource_lock_client_factory()
+    lock_client = _resource_lock_client_factory(cli_ctx)
     lock_resource = _extract_lock_params(resource_group_name, resource_provider_namespace,
                                          resource_type, resource_name)
     resource_group_name = lock_resource[0]
@@ -1015,8 +1015,8 @@ def _update_lock_parameters(parameters, level, notes, lock_id, lock_type):
         parameters.type = lock_type
 
 
-def update_lock(name, resource_group_name=None, level=None, notes=None):
-    lock_client = _resource_lock_client_factory()
+def update_lock(cli_ctx, name, resource_group_name=None, level=None, notes=None):
+    lock_client = _resource_lock_client_factory(cli_ctx)
     if resource_group_name is None:
         params = lock_client.management_locks.get(name)
         _update_lock_parameters(params, level, notes, None, None)

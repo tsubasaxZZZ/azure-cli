@@ -246,15 +246,6 @@ cli_command(__name__, 'network nic ip-config address-pool remove', custom_path +
 cli_command(__name__, 'network nic ip-config inbound-nat-rule add', custom_path + 'add_nic_ip_config_inbound_nat_rule')
 cli_command(__name__, 'network nic ip-config inbound-nat-rule remove', custom_path + 'remove_nic_ip_config_inbound_nat_rule')
 
-# NetworkSecurityGroupsOperations
-nsg_path = 'azure.mgmt.network.operations.network_security_groups_operations#NetworkSecurityGroupsOperations.'
-cli_command(__name__, 'network nsg delete', nsg_path + 'delete', cf_network_security_groups)
-cli_command(__name__, 'network nsg show', nsg_path + 'get', cf_network_security_groups, exception_handler=empty_on_404)
-cli_command(__name__, 'network nsg list', custom_path + 'list_nsgs')
-cli_command(__name__, 'network nsg create', custom_path + 'create_nsg', transform=transform_nsg_create_output)
-cli_generic_update_command(__name__, 'network nsg update', nsg_path + 'get', nsg_path + 'create_or_update', cf_network_security_groups)
-
-
 # NetworkWatcherOperations
 nw_path = 'azure.mgmt.network.operations.network_watchers_operations#NetworkWatchersOperations.'
 nw_pc_path = 'azure.mgmt.network.operations.packet_captures_operations#PacketCapturesOperations.'

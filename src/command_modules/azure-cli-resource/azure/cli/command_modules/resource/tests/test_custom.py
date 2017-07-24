@@ -21,7 +21,7 @@ def _simulate_no_tty():
     raise NoTTYException
 
 
-@mock.patch('knack.prompting._verify_is_a_tty', _simulate_no_tty)
+@mock.patch('knack.prompting.verify_is_a_tty', _simulate_no_tty)
 class TestCustom(unittest.TestCase):
 
     def test_extract_parameters(self):

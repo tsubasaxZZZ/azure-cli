@@ -34,6 +34,15 @@ class NetworkCommandsLoader(AzCommandsLoader):
     def load_command_table(self, args):
         super(NetworkCommandsLoader, self).load_command_table(args)
 
+        # NetworkSecurityGroupsOperations
+        nsg_path = 'azure.mgmt.network.operations.network_security_groups_operations#NetworkSecurityGroupsOperations.'
+        self.cli_command(__name__, 'network nsg delete', nsg_path + 'delete', client_factory=cf_network_security_groups)
+        self.cli_command(__name__, 'network nsg show', nsg_path + 'get', client_factory=cf_network_security_groups, exception_handler=empty_on_404)
+        self.cli_command(__name__, 'network nsg list', self.custom_path + 'list_nsgs')
+        self.cli_command(__name__, 'network nsg create', self.custom_path + 'create_nsg', transform=transform_nsg_create_output)
+        self.cli_generic_update_command(__name__, 'network nsg update', nsg_path + 'get', nsg_path + 'create_or_update', cf_network_security_groups)
+
+
         # VirtualNetworksOperations
         vnet_path = 'azure.mgmt.network.operations.virtual_networks_operations#VirtualNetworksOperations.'
         self.cli_command(__name__, 'network vnet delete', vnet_path + 'delete', client_factory=cf_virtual_networks)

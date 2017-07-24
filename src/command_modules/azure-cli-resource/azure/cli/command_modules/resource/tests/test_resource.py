@@ -287,36 +287,23 @@ class DeploymentLiveTest(LiveScenarioTest):
         self.assertTrue('Succeeded: {} (Microsoft.Resources/deployments)'.format(deployment_name), lines)
 
 
-class DeploymentnoWaitTest(ResourceGroupVCRTestBase):
-    def __init__(self, test_method):
-        super(DeploymentnoWaitTest, self).__init__(__file__, test_method,
-                                                   resource_group='azure-cli-deployment-test')
+class DeploymentnoWaitTest(ScenarioTest):
 
-    def test_group_deployment_no_wait(self):
-        self.execute()
-
-    def body(self):
+    @ResourceGroupPreparer(name_prefix='cli_test_group_deployment_no_wait')
+    def test_group_deployment_no_wait(self, resource_group):
         curr_dir = os.path.dirname(os.path.realpath(__file__))
         template_file = os.path.join(curr_dir, 'simple_deploy.json').replace('\\', '\\\\')
-        parameters_file = os.path.join(curr_dir, 'simple_deploy_parameters.json').replace('\\',
-                                                                                          '\\\\')
+        parameters_file = os.path.join(curr_dir, 'simple_deploy_parameters.json').replace('\\', '\\\\')
         deployment_name = 'azure-cli-deployment'
 
-        self.cmd('group deployment create -g {} -n {} --template-file {} --parameters @{} '
-                 '--no-wait'.format(self.resource_group,
-                                    deployment_name,
-                                    template_file,
-                                    parameters_file),
+        self.cmd('group deployment create -g {} -n {} --template-file {} --parameters @{} --no-wait'.format(resource_group, deployment_name, template_file, parameters_file),
                  checks=NoneCheck())
 
-        self.cmd('group deployment wait -g {} -n {} --created'.format(self.resource_group,
-                                                                      deployment_name),
+        self.cmd('group deployment wait -g {} -n {} --created'.format(resource_group, deployment_name),
                  checks=NoneCheck())
 
-        self.cmd('group deployment show -g {} -n {}'.format(self.resource_group, deployment_name),
-                 checks=[
-                     JMESPathCheck('properties.provisioningState', 'Succeeded')
-                 ])
+        self.cmd('group deployment show -g {} -n {}'.format(resource_group, deployment_name),
+                 checks=JMESPathCheck('properties.provisioningState', 'Succeeded'))
 
 
 class DeploymentThruUriTest(ScenarioTest):
@@ -344,67 +331,41 @@ class DeploymentThruUriTest(ScenarioTest):
         self.cmd('group deployment list -g {}'.format(self.resource_group), checks=NoneCheck())
 
 
-class ResourceMoveScenarioTest(VCRTestBase):
-    def __init__(self, test_method):
-        super(ResourceMoveScenarioTest, self).__init__(__file__, test_method)
-        self.source_group = 'res_move_src_group'
-        self.destination_group = 'res_move_dest_group'
+class ResourceMoveScenarioTest(ScenarioTest):
 
-    def test_resource_move(self):
-        self.execute()
 
-    def set_up(self):
-        self.cmd('group create --location westus --name {}'.format(self.source_group))
-        self.cmd('group create --location westus --name {}'.format(self.destination_group))
-
-    def tear_down(self):
-        self.cmd('group delete --name {} --yes'.format(self.source_group))
-        self.cmd('group delete --name {} --yes'.format(self.destination_group))
-
-    def body(self):
-        if self.playback:
-            subscription_id = MOCKED_SUBSCRIPTION_ID
-        else:
+    @ResourceGroupPreparer(name_prefix='cli_test_res_move_src', parameter_name='src_resource_group')
+    @ResourceGroupPreparer(name_prefix='cli_test_res_move_dst', parameter_name='dst_resource_group')
+    def test_resource_move(self, src_resource_group, dst_resource_group):
+        if self.in_recording:
             subscription_id = self.cmd('account list --query "[?isDefault].id" -o tsv')
+        else:
+            subscription_id = MOCKED_SUBSCRIPTION_ID
 
         # use 'network security group' for testing as it is fast to create
         nsg1 = 'nsg1'
-        nsg1_id = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Network/' \
-                  'networkSecurityGroups/{}'.format(subscription_id,
-                                                    self.source_group,
-                                                    nsg1)
+        nsg1_id = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Network/networkSecurityGroups/{}'.format(subscription_id, src_resource_group, nsg1)
         nsg2 = 'nsg2'
         nsg2_id = nsg1_id.replace(nsg1, nsg2)
 
-        self.cmd('network nsg create -g {} --name {}'.format(self.source_group, nsg1))
-        self.cmd('network nsg create -g {} --name {}'.format(self.source_group, nsg2))
+        self.cmd('network nsg create -g {} --name {}'.format(src_resource_group, nsg1))
+        self.cmd('network nsg create -g {} --name {}'.format(src_resource_group, nsg2))
 
         # move
-        self.cmd('resource move --ids {} {} --destination-group {}'.format(nsg1_id, nsg2_id,
-                                                                           self.destination_group))
+        self.cmd('resource move --ids {} {} --destination-group {}'.format(nsg1_id, nsg2_id, dst_resource_group))
 
         # see they show up at destination
-        self.cmd('network nsg show -g {} -n {}'.format(self.destination_group, nsg1),
-                 [JMESPathCheck('name', nsg1)])
-        self.cmd('network nsg show -g {} -n {}'.format(self.destination_group, nsg2),
-                 [JMESPathCheck('name', nsg2)])
+        self.cmd('network nsg show -g {} -n {}'.format(dst_resource_group, nsg1), checks=JCheck('name', nsg1))
+        self.cmd('network nsg show -g {} -n {}'.format(dst_resource_group, nsg2), checks=JCheck('name', nsg2))
 
 
-class FeatureScenarioTest(VCRTestBase):
-    def __init__(self, test_method):
-        super(FeatureScenarioTest, self).__init__(__file__, test_method)
+class FeatureScenarioTest(ScenarioTest):
 
     def test_feature_list(self):
-        self.execute()
+        self.cmd('feature list', checks=JCheck("length([?name=='Microsoft.Xrm/uxdevelopment'])", 1))
 
-    def body(self):
-        self.cmd('feature list', checks=[
-            JMESPathCheck("length([?name=='Microsoft.Xrm/uxdevelopment'])", 1)
-        ])
-
-        self.cmd('feature list --namespace {}'.format('Microsoft.Network'), checks=[
-            JMESPathCheck("length([?name=='Microsoft.Network/SkipPseudoVipGeneration'])", 1)
-        ])
+        self.cmd('feature list --namespace {}'.format('Microsoft.Network'),
+                 checks=JCheck("length([?name=='Microsoft.Network/SkipPseudoVipGeneration'])", 1))
 
 
 class PolicyScenarioTest(ScenarioTest):

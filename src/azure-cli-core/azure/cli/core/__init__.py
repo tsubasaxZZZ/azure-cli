@@ -310,7 +310,10 @@ def az_command_invoker_execute(self, argv):
     cmd_tbl = self.commands_loader.load_command_table(args)
     command = self._rudimentary_get_command(args)
     self.commands_loader.load_arguments(command)
-    cmd_tbl = {command: self.commands_loader.command_table[command]} if command else cmd_tbl
+    try:
+        cmd_tbl = {command: self.commands_loader.command_table[command]} if command else cmd_tbl
+    except KeyError:
+        pass
     self.ctx.raise_event(events.EVENT_INVOKER_POST_CMD_TBL_CREATE, cmd_tbl=cmd_tbl)
     self.parser.load_command_table(cmd_tbl)
     self.ctx.raise_event(events.EVENT_INVOKER_CMD_TBL_LOADED, cmd_tbl=cmd_tbl, parser=self.parser)
