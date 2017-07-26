@@ -628,7 +628,7 @@ def _get_auth_provider_latest_api_version(cli_ctx):
     return api_version
 
 
-def move_resource(ids, destination_group, destination_subscription_id=None):
+def move_resource(cli_ctx, ids, destination_group, destination_subscription_id=None):
     """Moves resources from one resource group to another(can be under different subscription)
 
     :param ids: the space separated resource ids to be moved

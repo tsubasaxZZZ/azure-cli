@@ -34,6 +34,10 @@ class NetworkCommandsLoader(AzCommandsLoader):
     def load_command_table(self, args):
         super(NetworkCommandsLoader, self).load_command_table(args)
 
+        # LoadBalancersOperations
+        lb_path = 'azure.mgmt.network.operations.load_balancers_operations#LoadBalancersOperations.'
+        self.cli_command(__name__, 'network lb show', lb_path + 'get', client_factory=cf_load_balancers, exception_handler=empty_on_404)
+
         # NetworkSecurityGroupsOperations
         nsg_path = 'azure.mgmt.network.operations.network_security_groups_operations#NetworkSecurityGroupsOperations.'
         self.cli_command(__name__, 'network nsg delete', nsg_path + 'delete', client_factory=cf_network_security_groups)

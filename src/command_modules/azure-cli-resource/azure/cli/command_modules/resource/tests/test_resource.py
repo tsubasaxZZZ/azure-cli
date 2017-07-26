@@ -234,7 +234,7 @@ class DeploymentTest(ScenarioTest):
         object_file = os.path.join(curr_dir, 'test-object.json').replace('\\', '\\\\')
         deployment_name = 'azure-cli-deployment'
 
-        subnet_id = self.cmd('network vnet create -g {} -n vnet1 --subnet-name subnet1'.format(resource_group)).get_output_in_json()['newVNet']['subnets'][0]['id']
+        subnet_id = self.cmd('network vnet create -g {} -n vnet1 --subnet-name subnet1'.format(resource_group)).get_output_in_json()['subnets'][0]['id']
 
         self.cmd('group deployment validate -g {} --template-file {} --parameters @"{}" --parameters subnetId="{}" --parameters backendAddressPools=@"{}"'.format(
             resource_group, template_file, parameters_file, subnet_id, object_file), checks=[
@@ -274,7 +274,7 @@ class DeploymentLiveTest(LiveScenarioTest):
         object_file = os.path.join(curr_dir, 'test-object.json').replace('\\', '\\\\')
         deployment_name = 'azure-cli-deployment2'
 
-        subnet_id = self.cmd('network vnet create -g {} -n vnet1 --subnet-name subnet1'.format(resource_group)).get_output_in_json()['newVNet']['subnets'][0]['id']
+        subnet_id = self.cmd('network vnet create -g {} -n vnet1 --subnet-name subnet1'.format(resource_group)).get_output_in_json()['subnets'][0]['id']
 
         with force_progress_logging() as test_io:
             self.cmd('group deployment create --verbose -g {} -n {} --template-file {} --parameters @"{}" --parameters subnetId="{}" --parameters backendAddressPools=@"{}"'.format(
@@ -338,7 +338,7 @@ class ResourceMoveScenarioTest(ScenarioTest):
     @ResourceGroupPreparer(name_prefix='cli_test_res_move_dst', parameter_name='dst_resource_group')
     def test_resource_move(self, src_resource_group, dst_resource_group):
         if self.in_recording:
-            subscription_id = self.cmd('account list --query "[?isDefault].id" -o tsv')
+            subscription_id = self.cmd('account list --query "[?isDefault].id"').get_output_in_json()[0]
         else:
             subscription_id = MOCKED_SUBSCRIPTION_ID
 
