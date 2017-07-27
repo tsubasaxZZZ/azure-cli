@@ -26,7 +26,6 @@
     <Compile Include="azure-cli-command_modules-nspkg\azure\cli\command_modules\__init__.py" />
     <Compile Include="azure-cli-command_modules-nspkg\setup.py" />
     <Compile Include="azure-cli-core\azure\cli\core\adal_authentication.py" />
-    <Compile Include="azure-cli-core\azure\cli\core\application.py" />
     <Compile Include="azure-cli-core\azure\cli\core\azlogging.py" />
     <Compile Include="azure-cli-core\azure\cli\core\cloud.py" />
     <Compile Include="azure-cli-core\azure\cli\core\commands\arm.py" />
@@ -42,11 +41,9 @@
     <Compile Include="azure-cli-core\azure\cli\core\extensions\query.py" />
     <Compile Include="azure-cli-core\azure\cli\core\extensions\transform.py" />
     <Compile Include="azure-cli-core\azure\cli\core\extensions\__init__.py" />
-    <Compile Include="azure-cli-core\azure\cli\core\help_files.py" />
     <Compile Include="azure-cli-core\azure\cli\core\parser.py" />
     <Compile Include="azure-cli-core\azure\cli\core\profiles\_shared.py" />
     <Compile Include="azure-cli-core\azure\cli\core\profiles\__init__.py" />
-    <Compile Include="azure-cli-core\azure\cli\core\prompting.py" />
     <Compile Include="azure-cli-core\azure\cli\core\sdk\util.py" />
     <Compile Include="azure-cli-core\azure\cli\core\sdk\validators.py" />
     <Compile Include="azure-cli-core\azure\cli\core\telemetry_upload.py" />
@@ -57,7 +54,6 @@
     <Compile Include="azure-cli-core\azure\cli\core\tests\test_cloud.py" />
     <Compile Include="azure-cli-core\azure\cli\core\tests\test_command_registration.py" />
     <Compile Include="azure-cli-core\azure\cli\core\tests\test_command_with_configured_defaults.py" />
-    <Compile Include="azure-cli-core\azure\cli\core\tests\test_config.py" />
     <Compile Include="azure-cli-core\azure\cli\core\tests\test_connection_verify.py" />
     <Compile Include="azure-cli-core\azure\cli\core\tests\test_extensions_query.py" />
     <Compile Include="azure-cli-core\azure\cli\core\tests\test_generic_update.py" />
@@ -73,7 +69,6 @@
     <Compile Include="azure-cli-core\azure\cli\core\tests\test_telemetry.py" />
     <Compile Include="azure-cli-core\azure\cli\core\tests\test_util.py" />
     <Compile Include="azure-cli-core\azure\cli\core\tests\test_validators.py" />
-    <Compile Include="azure-cli-core\azure\cli\core\tests\test_vcr_security.py" />
     <Compile Include="azure-cli-core\azure\cli\core\util.py" />
     <Compile Include="azure-cli-core\azure\cli\core\_config.py" />
     <Compile Include="azure-cli-core\azure\cli\core\_debug.py" />
@@ -562,8 +557,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="command_modules\azure-cli-resource\azure\cli\command_modules\resource\custom.py" />
-    <Compile Include="command_modules\azure-cli-resource\azure\cli\command_modules\resource\commands.py" />
-    <Compile Include="command_modules\azure-cli-resource\azure\cli\command_modules\resource\_params.py" />
     <Compile Include="command_modules\azure-cli-resource\azure\cli\command_modules\resource\_validators.py">
       <SubType>Code</SubType>
     </Compile>

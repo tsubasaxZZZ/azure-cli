@@ -293,9 +293,9 @@ def _get_cloud(cli_ctx, cloud_name):
     return next((x for x in get_clouds(cli_ctx) if x.name == cloud_name), None)
 
 
-def get_custom_clouds():
+def get_custom_clouds(cli_ctx):
     known_cloud_names = [c.name for c in KNOWN_CLOUDS]
-    return [c for c in get_clouds() if c.name not in known_cloud_names]
+    return [c for c in get_clouds(cli_ctx) if c.name not in known_cloud_names]
 
 
 def init_known_clouds(force=False):
@@ -378,10 +378,10 @@ def set_cloud_subscription(cli_ctx, cloud_name, subscription):
         config.write(configfile)
 
 
-def _set_active_subscription(cloud_name):
+def _set_active_subscription(cli_ctx, cloud_name):
     from azure.cli.core._profile import (Profile, _ENVIRONMENT_NAME, _SUBSCRIPTION_ID,
                                          _STATE, _SUBSCRIPTION_NAME)
-    profile = Profile()
+    profile = Profile(cli_ctx)
     subscription_to_use = get_cloud_subscription(cloud_name) or \
                           next((s[_SUBSCRIPTION_ID] for s in profile.load_cached_subscriptions()  # noqa
                                 if s[_STATE] == 'Enabled'),

@@ -50,7 +50,7 @@ class ArgumentGroupRegistry(KnackArgumentGroupRegistry):  # pylint: disable=too-
 
     def __init__(self, group_list):
 
-        super(ArgumentGroupRegistry, self).__init__()
+        super(ArgumentGroupRegistry, self).__init__(group_list)
         self.priorities = {
             None: 0,
             'Resource Id Arguments': 1,

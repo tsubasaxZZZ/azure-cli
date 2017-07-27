@@ -10,10 +10,10 @@ import azure.cli.command_modules.configure._help  # pylint: disable=unused-impor
 class ConfigureCommandsLoader(AzCommandsLoader):
 
     def load_command_table(self, args):
-        super().load_command_table(args)
+        super(ConfigureCommandsLoader, self).load_command_table(args)
         self.cli_command(__name__, 'configure', 'azure.cli.command_modules.configure.custom#handle_configure')
         return self.command_table
 
     def load_arguments(self, command):
         self.register_cli_argument('configure', 'defaults', nargs='+', options_list=('--defaults', '-d'))
-        super().load_arguments(command)
+        super(ConfigureCommandsLoader, self).load_arguments(command)

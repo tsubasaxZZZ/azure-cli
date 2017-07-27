@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 #  pylint: disable=unused-import
-from azure.cli.core.profiles._shared import AZURE_API_PROFILES, ResourceType
+from azure.cli.core.profiles._shared import AZURE_API_PROFILES, ResourceType, PROFILE_TYPE
 
 # API Profiles currently supported in the CLI.
 API_PROFILES = {

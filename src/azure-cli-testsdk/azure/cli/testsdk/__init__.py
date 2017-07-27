@@ -7,6 +7,8 @@ from azure.cli.core import AzCli
 
 from azure_devtools.scenario_tests import live_only, record_only, get_sha1_hash
 
+from knack.commands import CLICommandsLoader
+
 from .base import ScenarioTest, LiveScenarioTest
 from .preparers import (StorageAccountPreparer, ResourceGroupPreparer, RoleBasedServicePrincipalPreparer,
                         KeyVaultPreparer)
@@ -21,9 +23,10 @@ __all__ = ['ScenarioTest', 'LiveScenarioTest', 'ResourceGroupPreparer', 'Storage
            'live_only', 'record_only', 'StringCheck', 'StringContainCheck', 'get_sha1_hash', 'KeyVaultPreparer',
            'JMESPathCheckGreaterThan', 'api_version_constraint', 'get_active_api_profile', 'create_random_name']
 
+
 class TestCli(AzCli):
 
-    def __init__(self, **kwargs):
+    def __init__(self, commands_loader_cls=None, **kwargs):
         import os
 
         from azure.cli.core import MainCommandsLoader, AzCli
@@ -41,7 +44,7 @@ class TestCli(AzCli):
             cli_name='az',
             config_dir=GLOBAL_CONFIG_DIR,
             config_env_var_prefix=ENV_VAR_PREFIX,
-            commands_loader_cls=MainCommandsLoader,
+            commands_loader_cls=commands_loader_cls or MainCommandsLoader,
             parser_cls=AzCliCommandParser,
             logging_cls=AzCliLogging,
             help_cls=AzCliHelp)

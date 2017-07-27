@@ -98,7 +98,7 @@ def login(cli_ctx, username=None, password=None, service_principal=None, tenant=
     import requests
     interactive = False
 
-    profile = Profile()
+    profile = Profile(cli_ctx)
 
     if username:
         if not password:

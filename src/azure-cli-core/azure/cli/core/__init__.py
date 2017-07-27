@@ -20,8 +20,7 @@ import six
 logger = get_logger(__name__)
 
 
-def _pre_command_table_create(ctx, args):
-
+def _expand_file_prefixed_files(args):
     def _load_file(path):
         from azure.cli.core.util import read_file_content
         if path == '-':
@@ -52,8 +51,10 @@ def _pre_command_table_create(ctx, args):
         except IndexError:
             return _maybe_load_file(arg_split[0])
 
-    def _expand_file_prefixed_files(args):
-        return list([_expand_file_prefix(arg) for arg in args])
+    return list([_expand_file_prefix(arg) for arg in args])
+
+
+def _pre_command_table_create(ctx, args):
 
     ctx.refresh_request_id()
     return _expand_file_prefixed_files(args)

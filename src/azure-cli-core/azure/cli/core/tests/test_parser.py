@@ -5,8 +5,10 @@
 
 import unittest
 from six import StringIO
+from azure.cli.core import AzCommandsLoader, AzCliCommand
 from azure.cli.core.parser import AzCliCommandParser
-from azure.cli.core.commands import CliCommand
+
+from azure.cli.testsdk import TestCli
 
 from knack.arguments import enum_choice_list
 
@@ -26,11 +28,12 @@ class TestParser(unittest.TestCase):
         def test_handler2():
             pass
 
-        command = CliCommand('command the-name', test_handler1)
-        command2 = CliCommand('sub-command the-second-name', test_handler2)
+        cli = TestCli()
+        command = AzCliCommand(cli, 'command the-name', test_handler1)
+        command2 = AzCliCommand(cli, 'sub-command the-second-name', test_handler2)
         cmd_table = {'command the-name': command, 'sub-command the-second-name': command2}
 
-        parser = AzCliCommandParser()
+        parser = AzCliCommandParser(cli)
         parser.load_command_table(cmd_table)
         args = parser.parse_args('command the-name'.split())
         self.assertIs(args.func, command)
@@ -46,11 +49,12 @@ class TestParser(unittest.TestCase):
         def test_handler(args):  # pylint: disable=unused-argument
             pass
 
-        command = CliCommand('test command', test_handler)
+        cli = TestCli()
+        command = AzCliCommand(cli, 'test command', test_handler)
         command.add_argument('req', '--req', required=True)
         cmd_table = {'test command': command}
 
-        parser = AzCliCommandParser()
+        parser = AzCliCommandParser(cli)
         parser.load_command_table(cmd_table)
 
         args = parser.parse_args('test command --req yep'.split())
@@ -64,11 +68,12 @@ class TestParser(unittest.TestCase):
         def test_handler():
             pass
 
-        command = CliCommand('test command', test_handler)
+        cli = TestCli()
+        command = AzCliCommand(cli, 'test command', test_handler)
         command.add_argument('req', '--req', required=True, nargs=2)
         cmd_table = {'test command': command}
 
-        parser = AzCliCommandParser()
+        parser = AzCliCommandParser(cli)
         parser.load_command_table(cmd_table)
 
         args = parser.parse_args('test command --req yep nope'.split())
@@ -90,11 +95,12 @@ class TestParser(unittest.TestCase):
         def test_handler():
             pass
 
-        command = CliCommand('test command', test_handler)
+        cli = TestCli()
+        command = AzCliCommand(cli, 'test command', test_handler)
         command.add_argument('opt', '--opt', required=True, **enum_choice_list(TestEnum))
         cmd_table = {'test command': command}
 
-        parser = AzCliCommandParser()
+        parser = AzCliCommandParser(cli)
         parser.load_command_table(cmd_table)
 
         args = parser.parse_args('test command --opt alL_cAps'.split())

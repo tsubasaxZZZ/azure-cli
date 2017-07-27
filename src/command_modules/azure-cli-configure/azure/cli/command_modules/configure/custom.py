@@ -40,7 +40,7 @@ def _print_cur_configuration(file_config):
         print('\n'.join(['{} = {}'.format(ev, os.environ[ev]) for ev in env_vars]))
 
 
-def _config_env_public_azure(_):
+def _config_env_public_azure(cli_ctx, _):
     from adal.adal_error import AdalError
     from azure.cli.core.commands.client_factory import get_mgmt_service_client
     from azure.mgmt.resource import ResourceManagementClient
@@ -55,7 +55,7 @@ def _config_env_public_azure(_):
             method_index = prompt_choice_list(MSG_PROMPT_LOGIN, LOGIN_METHOD_LIST)
             answers['login_index'] = method_index
             answers['login_options'] = str(LOGIN_METHOD_LIST)
-            profile = Profile()
+            profile = Profile(cli_ctx)
             interactive = False
             username = None
             password = None

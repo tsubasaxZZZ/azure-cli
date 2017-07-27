@@ -23,12 +23,12 @@ from azure.cli.core.cloud import (Cloud,
 METADATA_ENDPOINT_SUFFIX = '/metadata/endpoints?api-version=2015-01-01'
 
 
-def get_cloud_name_completion_list(prefix, action, parsed_args, **kwargs):  # pylint: disable=unused-argument
-    return [c.name for c in get_clouds()]
+def get_cloud_name_completion_list(cli_ctx, prefix, action, parsed_args, **kwargs):  # pylint: disable=unused-argument
+    return [c.name for c in get_clouds(cli_ctx)]
 
 
-def get_custom_cloud_name_completion_list(prefix, action, parsed_args, **kwargs):  # pylint: disable=unused-argument
-    return [c.name for c in get_custom_clouds()]
+def get_custom_cloud_name_completion_list(cli_ctx, prefix, action, parsed_args, **kwargs):  # pylint: disable=unused-argument
+    return [c.name for c in get_custom_clouds(cli_ctx)]
 
 
 def list_clouds(cli_ctx):

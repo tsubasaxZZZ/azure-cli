@@ -364,8 +364,8 @@ def _add_role_assignment(role, service_principal, delay=2, output=True):
     return True
 
 
-def _get_subscription_id():
-    _, sub_id, _ = Profile().get_login_credentials(subscription_id=None)
+def _get_subscription_id(cli_ctx):
+    _, sub_id, _ = Profile(cli_ctx).get_login_credentials(subscription_id=None)
     return sub_id
 
 
